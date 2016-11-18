@@ -20,10 +20,9 @@ class SDU:
 
     def __init__(self):
         self.loginUrl = 'http://jiaoda.zhushou.la/Vote_do.asp'
-        self.maxUserNum = 11
+        self.maxUserNum = 3
         self.id = 0
         self.initProxylist()
-        self.initIP()
 
         self.loginHeaders =  {
             'Connection' : 'Keep-Alive',
@@ -37,14 +36,15 @@ class SDU:
         self.proxyURL = random.choice(self.proxylist)    
         print u"正在使用的代理IP为：",self.proxyURL
         # self.cookie = cookielib.CookieJar()
-        self.cookie = cookielib.CookieJar()
-        self.proxy = urllib2.ProxyHandler({'':self.proxyURL})
-        self.cookieHandler = urllib2.HTTPCookieProcessor(self.cookie)
+        # self.cookieHandler = urllib2.HTTPCookieProcessor(self.cookie)
+        # self.proxy = urllib2.ProxyHandler({'http': 'http://' + self.proxyURL})
+        self.proxy = urllib2.ProxyHandler({'': '' + self.proxyURL})
 
         #普通方式访问（使用本机IP）
         #self.opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(self.cookie))
         #代理服务器访问
-        self.opener = urllib2.build_opener(self.cookieHandler,self.proxy,urllib2.HTTPHandler)
+        # self.opener = urllib2.build_opener(self.cookieHandler,self.proxy,urllib2.HTTPHandler)
+        self.opener = urllib2.build_opener(self.proxy,urllib2.HTTPHandler)
         
 
     def initLoginData(self):
@@ -71,15 +71,20 @@ class SDU:
 
     def workItOut(self):
         self.getPageUrl()
-    
+
+    def checkMaxUserNum(self):
+        if self.maxUserNum > 30:
+            self.maxUserNum = 20
+
     def start(self):
+        self.checkMaxUserNum()
         for num in range(0,self.maxUserNum):
             self.initIP()
             self.initLoginData()
             self.workItOut()
-            time.sleep(random.randint(1,2))
+            time.sleep(random.randint(3,6))
         print u"任务完成！"            
 
 sdu = SDU()
-sdu.id = raw_input('请输入ID:')
+# sdu.id = raw_input('请输入ID:')
 sdu.start()
